@@ -1,0 +1,3 @@
+SoundCloud downloader. Based on the script written by /u/redditgoogle @ https://www.reddit.com/r/Music/comments/4597e6/soundcloud_could_be_forced_to_close_after_44m/czw8q9q
+You have to download youtube-dl to use this. Linux & mac users can use the script above or have to remove the ".exe" in the youtube-dl exec path and build.
+Will save files in the current working directory. Options are maxparallel which defines how many artists to download in parallel, and silent which disable youtube-dl stdout.
