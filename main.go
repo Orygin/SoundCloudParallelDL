@@ -56,9 +56,9 @@ func fetch(artist string) {
 	args := []string{
 		"soundcloud.com/" + artist + "/tracks",
 		"-o", workingDir + artist + "/%(artist)s-%(title)s.%(ext)s",
-		"-x", "--audio-format", "flac", "--audio-quality", "8",
+		//"-x", "--audio-format", "flac", "--audio-quality", "8",
 		/*"--add-metadata", "--write-description", */ "-w", "--no-progress",
-		"--sleep-requests", "6",
+		"--sleep-requests", "6", "-k",
 		//"--extractor-args", "soundcloud:formats=*_aac",
 	}
 	if *cookieFile != "" {
@@ -67,6 +67,7 @@ func fetch(artist string) {
 	log.Printf("args: %s", strings.Join(args, " "))
 
 	ctx, cancel := context.WithCancel(context.Background())
+	cancelled := false
 
 	cmd := exec.CommandContext(ctx, cmdBinName, args...)
 	if !*silent {
@@ -74,6 +75,7 @@ func fetch(artist string) {
 	}
 	cmd.Stderr = os.Stderr
 	cmd.Cancel = func() error {
+		cancelled = true
 		proc, err := os.FindProcess(-cmd.Process.Pid)
 		if err != nil {
 			log.Printf("Could not find process: %v", err)
@@ -85,6 +87,9 @@ func fetch(artist string) {
 
 	if err := cmd.Run(); err != nil {
 		log.Printf("could not run ytdlp: %s", err.Error())
+		if !cancelled {
+			os.Exit(1)
+		}
 	}
 	log.Println("Finished " + artist)
 }
